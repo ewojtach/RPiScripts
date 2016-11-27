@@ -20,7 +20,7 @@ if [[ $1 == "parse" ]]; then
       if [[ $line =~ ^[0-9a-fA-F]{2}\ [0-9a-fA-F] ]]; then
         packet="$packet $line"
       else
-	echo RAW: $packet
+	# echo RAW: $packet
 	cnt=0
 	dcnt=0
 	bl=0
@@ -34,17 +34,17 @@ if [[ $1 == "parse" ]]; then
         for i in $packet; do
             if [[ "$cnt" -eq "13" ]]; then
 	      tl=`echo "ibase=16; $i"|bc`
-	      echo TL $tl
+	      #echo TL $tl
             fi
             if [[ "$cnt" -gt "13" ]]; then
 	      np+=$i
 	      if [[ "$bl" -eq "0" ]]; then
 		#echo DTYPE: $DTYPE
 		if [[ "$DTYPE" -eq "145" ]]; then # iNode Care 1 sensor /motion and temp/
-		       echo DTYPE
+		# echo DTYPE
 
 	               MAC=`echo $packet | awk '{print $13$12$11$10$9$8}'`
-	               echo mp: $mp
+	               #echo mp: $mp
 			
 
 			#ALARMY
@@ -52,7 +52,8 @@ if [[ $1 == "parse" ]]; then
 
                         HEX=`echo $mp | awk '{ print $8$7 }'`
 			DEC=`echo "ibase=16; $HEX"|bc`
-			echo ALARM:  $HEX $DEC
+			ALARM=$DEC
+			#echo ALARM:  $HEX $DEC
 			if [[ "$DEC" -eq "1" ]]; then
 				echo ALARM!!!!!!!!!!!!!!!!!!!!!!!!!!
 				omxplayer -o local police_s.wav
@@ -63,47 +64,24 @@ if [[ $1 == "parse" ]]; then
 
 			CONSTDEC=`echo $((16#8192))`
 
-			echo consstdec: $CONSTDEC
+			#echo consstdec: $CONSTDEC
 
                        HEX=`echo $mp | awk '{ print $12$11 }'`
-			echo temp hex: $HEX
+			#echo temp hex: $HEX
                        DEC=`echo "ibase=16; $HEX"|bc`
 			DECY=`echo $((16#$HEX))`
 		       TEMP=$DEC
-			echo RAW DECY $DECY
-			echo RAW TEMP $TEMP
+			#echo RAW DECY $DECY
+			#echo RAW TEMP $TEMP
 		       if [[ "$TEMP" -gt "127" ]]; then
 				TEMP=`expr $TEMP - $CONSTDEC`
 			fi
-		       echo calc TEMP $TEMP
-
-                       #WATY
-                       HEX=`echo $mp | awk '{ print $6$5 }'`
-                       DEC=`echo "ibase=16; $HEX"|bc`
-		       #echo MINUTE POWER $DEC
-                       CALC=`echo $DEC $CONST | awk '{ kw=($1/$2*60); printf"%0.0f\n",  kw  }'`
-
-                       #IMPULSY
-                       HEXIM=`echo $mp  | awk '{ print $10$9$8$7 }'`
-		       #echo TOTAL POWER $HEXIM
-                       DECIM=`echo "ibase=16; $HEXIM"|bc`
-		       #echo TOTAL POWER $DECIM
-                       CALCIM=`echo $DECIM $CONST | awk '{ kWh=($1/$2); printf"%0.3f\n", kWh  }'`
-		       #echo CALCIM $CALCIM
-                       TODOMOTICZ=`echo $CALCIM | sed -r 's/\.//g'`
-
-                       #domoticz
-                       #/usr/bin/curl -s -o /dev/null  "http://10.0.0.2:8080/json.htm?type=command&param=udevice&idx=1&nvalue=0&svalue=$CALC;$TODOMOTICZ"
-
-                       #emoncms
-                       #/usr/bin/curl -s -o /dev/null  "http://emoncms.org/input/post.json?json={meterpower:$CALC}&apikey=XYZ"
-                       #/usr/bin/curl -s -o /dev/null  "http://emoncms.org/input/post.json?json={meterkwh:$CALCIM}&apikey=XYZ"
+		       #echo calc TEMP $TEMP
 
                        #logowanie do lokalnego sysloga
-                       logger POWER: $CALC W $CALCIM kWh -p local2.info
+                       logger TEMP: $TEMP ALARM: $ALARM local.info
                        #print na ekranie
-	               #echo MAC: $MAC POWER: $CALC kW TOTAL: $CALCIM kWh | awk '{ print strftime("%Y-%m-%d %H:%M:%S"), $0; fflush(); }'    		       
-		       echo MAC: $MAC POWER: $CALC kW TOTAL: $CALCIM kWh | awk -v data="$(date +"%Y-%m-%d %H:%M:%S")" '{print data, $0; fflush();}' 
+	               echo MAC: $MAC TEMP: $TEMP ALARM: $ALARM | awk -v data="$(date +"%Y-%m-%d %H:%M:%S")" '{print data, $0; fflush();}' 
 		       DTYPE=0
 	        fi
 
