@@ -43,10 +43,8 @@ if [[ $1 == "parse" ]]; then
 		if [[ "$DTYPE" -eq "145" ]]; then # iNode Care 1 sensor /motion and temp/
 		# echo DTYPE
 
-	               MAC=`echo $packet | awk '{print $13$12$11$10$9$8}'`
+	   MAC=`echo $packet | awk '{print $13$12$11$10$9$8}'`
 	               #echo mp: $mp
-			
-
 			#ALARMY
 			#MOVE_FLAG=`echo $((16#8192))`
 
@@ -57,42 +55,43 @@ if [[ $1 == "parse" ]]; then
 			if [[ "$DEC" -eq "1" ]]; then
 				echo ALARM!!!!!!!!!!!!!!!!!!!!!!!!!!
 				omxplayer -o local police_s.wav
-			fi 
+        curl -i -H "Accept: application/json" -H "Content-Type: application/json" https://smarthomeproject.mybluemix.net/api/alert?sensor=$MAC&value=$ALARM
+
+			fi
 
 
-		       #TEMP
+		  #temperature
 
 			CONSTDEC=`echo $((16#8192))`
 
 			#echo consstdec: $CONSTDEC
 
-                       HEX=`echo $mp | awk '{ print $12$11 }'`
+      HEX=`echo $mp | awk '{ print $12$11 }'`
 			#echo temp hex: $HEX
-                       DEC=`echo "ibase=16; $HEX"|bc`
-			DECY=`echo $((16#$HEX))`
-		       TEMP=$DEC
+      DEC=`echo "ibase=16; $HEX"|bc`
+			TEMP=$DEC
 			#echo RAW DECY $DECY
 			#echo RAW TEMP $TEMP
-		       if [[ "$TEMP" -gt "127" ]]; then
+		  if [[ "$TEMP" -gt "127" ]]; then
 				TEMP=`expr $TEMP - $CONSTDEC`
 			fi
-		       #echo calc TEMP $TEMP
+      curl -i -H "Accept: application/json" -H "Content-Type: application/json" https://smarthomeproject.mybluemix.net/api/measurement?sensor=$MAC&value=$TEMP
 
-                       #logowanie do lokalnego sysloga
-                       logger TEMP: $TEMP ALARM: $ALARM local.info
-                       #print na ekranie
-	               echo MAC: $MAC TEMP: $TEMP ALARM: $ALARM | awk -v data="$(date +"%Y-%m-%d %H:%M:%S")" '{print data, $0; fflush();}' 
-		       DTYPE=0
-	        fi
+
+      #logowanie do lokalnego sysloga
+      logger TEMP: $TEMP ALARM: $ALARM local.info
+      #print na ekranie
+	    echo MAC: $MAC TEMP: $TEMP ALARM: $ALARM | awk -v data="$(date +"%Y-%m-%d %H:%M:%S")" '{print data, $0; fflush();}'
+		  DTYPE=0
+	  fi
 
 		if [[ "$dcnt" -lt "$tl" ]]; then
 		  bl=`echo "ibase=16; $i"|bc`
 	          bcnt=0
-		  #echo BL $bl		  
+		  #echo BL $bl
   		  mp=$i" "
-                fi		    
-	      else
-		if [[ "$bcnt" -eq "0" ]]; then
+    fi
+	  else if [[ "$bcnt" -eq "0" ]]; then
 		  bc=`echo "ibase=16; $i"|bc`
 		  #echo BC $bc
 		fi
@@ -109,11 +108,11 @@ if [[ $1 == "parse" ]]; then
 		bl=$bl-1
 
 		mp+=$i" "
-	      fi
-	      dcnt=$dcnt+1
-            fi
-	    cnt=$cnt+1
-	done
+	fi
+	dcnt=$dcnt+1
+fi
+cnt=$cnt+1
+done
 
         capturing=""
         packet=""

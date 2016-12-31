@@ -12,7 +12,7 @@ CREATE TABLE Alerts (
 CREATE TABLE Measurments (
     value int  NOT NULL,
     sensor varchar(20)  NOT NULL,
-    date timestamp  NOT NULL
+    measureDate timestamp  NOT NULL
 );
 
 -- Table: Sensors
@@ -27,18 +27,17 @@ CREATE TABLE Sensors (
 -- Reference: Alerts_Sensors (table: Alerts)
 ALTER TABLE Alerts ADD CONSTRAINT Alerts_Sensors
     FOREIGN KEY (sensor)
-    REFERENCES Sensors (mac)  
-    NOT DEFERRABLE 
+    REFERENCES Sensors (mac)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: Measurments_Sensors (table: Measurments)
 ALTER TABLE Measurments ADD CONSTRAINT Measurments_Sensors
     FOREIGN KEY (sensor)
-    REFERENCES Sensors (mac)  
-    NOT DEFERRABLE 
+    REFERENCES Sensors (mac)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- End of file.
-
