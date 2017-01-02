@@ -8,6 +8,8 @@ declare -i bl
 declare -i bc
 declare -i bt
 declare -i DTYPE
+declare -A measureArr
+declare -A alertArr
 
 if [[ $1 == "parse" ]]; then
   packet=""
@@ -55,9 +57,17 @@ if [[ $1 == "parse" ]]; then
 			if [[ "$DEC" -eq "1" ]]; then
 				echo ALARM!!!!!!!!!!!!!!!!!!!!!!!!!!
 				omxplayer -o local police_s.wav
-        curl -i -H "Accept: application/json" -H "Content-Type: application/json" https://smarthomeproject.mybluemix.net/api/alert?sensor=$MAC&value=$ALARM
+        			
+				if [[ "$DEC" -ne "${alertArr[$MAC]}" ]]; then
+					echo nowy alarm
+					alertArr[$MAC]=$DEC
+       					curl -i -H "Accept: application/json" -H "Content-Type: application/json" https://localhost:1880/alert?sensor=$MAC\&value=$ALARM
+				
+				fi				
 
+				
 			fi
+			alertArr[$MAC]=$DEC
 
 
 		  #temperature
@@ -75,8 +85,11 @@ if [[ $1 == "parse" ]]; then
 		  if [[ "$TEMP" -gt "127" ]]; then
 				TEMP=`expr $TEMP - $CONSTDEC`
 			fi
-      curl -i -H "Accept: application/json" -H "Content-Type: application/json" https://smarthomeproject.mybluemix.net/api/measurement?sensor=$MAC&value=$TEMP
-
+		if [[ "$TEMP" -ne "${measureArr[$MAC]}" ]]; then
+			echo nowa wartosc
+			measureArr[$MAC]=$TEMP
+       			curl -i -H "Accept: application/json" -H "Content-Type: application/json" http://localhost:1880/measure?sensor=$MAC\&value=$TEMP
+		fi
 
       #logowanie do lokalnego sysloga
       logger TEMP: $TEMP ALARM: $ALARM local.info
