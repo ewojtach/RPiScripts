@@ -6,7 +6,7 @@ declare -i bcnt
 declare -i tl
 declare -i bl
 declare -i bc
-declare -i bt
+declare -i btALARMY
 declare -i DTYPE
 declare -A measureArr
 declare -A alertArr
@@ -22,7 +22,7 @@ if [[ $1 == "parse" ]]; then
       if [[ $line =~ ^[0-9a-fA-F]{2}\ [0-9a-fA-F] ]]; then
         packet="$packet $line"
       else
-	# echo RAW: $packet
+ 	# echo RAW: $packet
 	cnt=0
 	dcnt=0
 	bl=0
@@ -76,20 +76,17 @@ if [[ $1 == "parse" ]]; then
 
 			#echo consstdec: $CONSTDEC
 
-      HEX=`echo $mp | awk '{ print $12$11 }'`
-			#echo temp hex: $HEX
-      DEC=`echo "ibase=16; $HEX"|bc`
-			TEMP=$DEC
-			#echo RAW DECY $DECY
-			#echo RAW TEMP $TEMP
-		  if [[ "$TEMP" -gt "127" ]]; then
+		        HEX=`echo $mp | awk '{ print $12$11 }'`
+			DEC=$(( 16#$HEX&16#3FF ))
+			TEMP=$(($DEC/16))
+			if [[ "$TEMP" -gt "127" ]]; then
 				TEMP=`expr $TEMP - $CONSTDEC`
 			fi
-		if [[ "$TEMP" -ne "${measureArr[$MAC]}" ]]; then
-			echo nowa wartosc
-			measureArr[$MAC]=$TEMP
-       			curl -i -H "Accept: application/json" -H "Content-Type: application/json" http://localhost:1880/measure?sensor=$MAC\&value=$TEMP
-		fi
+			if [[ "$TEMP" -ne "${measureArr[$MAC]}" ]]; then
+				echo nowa wartosc
+				measureArr[$MAC]=$TEMP
+       				curl -i -H "Accept: application/json" -H "Content-Type: application/json" http://localhost:1880/measure?sensor=$MAC\&value=$TEMP
+			fi
 
       #logowanie do lokalnego sysloga
       logger TEMP: $TEMP ALARM: $ALARM local.info
