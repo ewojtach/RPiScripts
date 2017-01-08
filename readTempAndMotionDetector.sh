@@ -22,7 +22,7 @@ if [[ $1 == "parse" ]]; then
       if [[ $line =~ ^[0-9a-fA-F]{2}\ [0-9a-fA-F] ]]; then
         packet="$packet $line"
       else
- 	# echo RAW: $packet
+ # echo RAW: $packet
 	cnt=0
 	dcnt=0
 	bl=0
@@ -56,12 +56,12 @@ if [[ $1 == "parse" ]]; then
 			#echo ALARM:  $HEX $DEC
 			if [[ "$DEC" -eq "1" ]]; then
 				echo ALARM!!!!!!!!!!!!!!!!!!!!!!!!!!
-				omxplayer -o local police_s.wav
+				# omxplayer -o local police_s.wav
         			
 				if [[ "$DEC" -ne "${alertArr[$MAC]}" ]]; then
 					echo nowy alarm
 					alertArr[$MAC]=$DEC
-       					curl -i -H "Accept: application/json" -H "Content-Type: application/json" https://localhost:1880/alert?sensor=$MAC\&value=$ALARM
+       					curl -i -H "Accept: application/json" -H "Content-Type: application/json" http://localhost:1880/alert?sensor=$MAC\&value=$ALARM
 				
 				fi				
 
