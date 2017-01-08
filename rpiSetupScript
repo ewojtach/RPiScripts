@@ -1,0 +1,72 @@
+
+######### PI CONFIGURATION
+
+sudo nano /etc/default/keyboard    #   XKBLAYOUT=„us”
+
+# set up wifi connection
+
+########## remote VNC configuration
+
+sudo apt-get install tightvncserver
+sudo vncserver :1
+sudo chown pi:pi .Xauthority
+
+#?
+mkdir libs
+cd libs/
+git clone git://git.drogon.net/wiringPi
+cd wiringPi
+./build
+
+######### BT configuration
+
+sudo apt-get install bc
+sudo apt-get install bluez bluez-hcidump
+
+#test: hcidump —raw
+#test: hcitool leascan —duplicaties &
+
+
+
+######### GIT CLONE ##################
+
+cd ~
+mkdir dev
+cd dev
+git clone https://github.com/ewojtach/RPiScripts.git
+
+cd RPiScripts
+
+chmod +x readTempAndMotionDetector.sh
+
+#############  wemo configuration
+
+cd ~
+mkdir wemo
+cd wemo/
+mkdir ouimeaux
+cd ouimeaux
+git clone https://github.com/ianmcc/ouimeaux.git
+cd ouimeaux
+cat setup.cfg
+# config date to sync from ext server
+
+#install wemo lib
+sudo apt-get install python-setuptools python-dev
+sudo python setup.py install
+
+#test: wemo list
+
+
+######### boot configuration
+
+# node red
+
+sudo systemctl enable nodered.service
+# cron and wemo nodes installation
+sudo apt-get install npm
+sudo npm install -g npm@2.x
+hash -r
+cd ~/.node-red
+npm install node-red-conrib-cron
+npm install node-red-node-wemo
