@@ -38,6 +38,7 @@ git clone https://github.com/ewojtach/RPiScripts.git
 cd RPiScripts
 
 chmod +x readTempAndMotionDetector.sh
+# set script to be started on boot
 
 #############  wemo configuration
 
@@ -70,3 +71,43 @@ hash -r
 cd ~/.node-red
 npm install node-red-conrib-cron
 npm install node-red-node-wemo
+
+# add BLE script to configuration
+? sudo nano /etc/rc.local
+
+
+# motion configuration
+# install motion
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install motion
+sudo chown motion:video /var/lib/motion
+sudo vi /etc/motion/motion.conf
+# change stream_localhost to on
+# add Authentication
+
+
+
+#inet configuration
+sudo vi /etc/network/interfaces
+# add:
+# auto wlan0
+# allow-hotplug wlan0
+# iface wlan0 inet static
+# address 192.168.1.41
+# netmask 255.255.255.0
+# gateway 192.168.1.1
+# wpa-passphrase xxx
+# wpa-ssid xxx
+
+
+
+#add scan to cron Tab
+sudo apt-get install gnome-schedule
+crontab -e
+# add:
+# * * * * * /home/pi/dev/RPiScripts/scanCronScript.sh
+# @reboot /home/pi/dev/RPiScripts/scanCronScript.sh
+
+sudo touch /var/log/scanner.txt
+sudo chmod 777 /var/log/scanner.txt
