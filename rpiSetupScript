@@ -4,6 +4,17 @@
 sudo nano /etc/default/keyboard    #   XKBLAYOUT=„us”
 
 # set up wifi connection
+#inet configuration
+sudo vi /etc/network/interfaces
+# add:
+# auto wlan0
+# allow-hotplug wlan0
+# iface wlan0 inet static
+# address 192.168.1.41
+# netmask 255.255.255.0
+# gateway 192.168.1.1
+# wpa-passphrase xxx
+# wpa-ssid xxx
 
 ########## remote VNC configuration
 
@@ -47,7 +58,7 @@ mkdir wemo
 cd wemo/
 mkdir ouimeaux
 cd ouimeaux
-git clone https://github.com/ianmcc/ouimeaux.git
+git clone https://github.com/iancmcc/ouimeaux.git
 cd ouimeaux
 cat setup.cfg
 # config date to sync from ext server
@@ -62,6 +73,7 @@ sudo python setup.py install
 ######### boot configuration
 
 # node red
+# start node red from menu: Programming-> NodeRED
 
 sudo systemctl enable nodered.service
 # cron and wemo nodes installation
@@ -69,7 +81,7 @@ sudo apt-get install npm
 sudo npm install -g npm@2.x
 hash -r
 cd ~/.node-red
-npm install node-red-conrib-cron
+npm install node-red-contrib-cron
 npm install node-red-node-wemo
 
 # add BLE script to configuration
@@ -87,27 +99,14 @@ sudo vi /etc/motion/motion.conf
 # add Authentication
 
 
-
-#inet configuration
-sudo vi /etc/network/interfaces
-# add:
-# auto wlan0
-# allow-hotplug wlan0
-# iface wlan0 inet static
-# address 192.168.1.41
-# netmask 255.255.255.0
-# gateway 192.168.1.1
-# wpa-passphrase xxx
-# wpa-ssid xxx
-
-
-
-#add scan to cron Tab
+#add scan and reboot to cron Tab
 sudo apt-get install gnome-schedule
 crontab -e
 # add:
 # * * * * * /home/pi/dev/RPiScripts/scanCronScript.sh
 # @reboot /home/pi/dev/RPiScripts/scanCronScript.sh
+# 0 1 * * * /home/pi/dev/RPiScripts/rebootNodeRedScript.sh
+
 
 sudo touch /var/log/scanner.txt
 sudo chmod 777 /var/log/scanner.txt
