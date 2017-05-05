@@ -14,7 +14,7 @@ sudo vi /etc/network/interfaces
 # netmask 255.255.255.0
 # gateway 192.168.1.1
 # wpa-passphrase xxx
-# wpa-ssid xxx
+# wpa-ssid xx
 
 ########## remote VNC configuration
 
@@ -35,7 +35,7 @@ sudo apt-get install bc
 sudo apt-get install bluez bluez-hcidump
 
 #test: hcidump —raw
-#test: hcitool leascan —duplicaties &
+#test: hcitool leascan --duplicates &
 
 
 
@@ -77,6 +77,8 @@ sudo python setup.py install
 
 sudo systemctl enable nodered.service
 # cron and wemo nodes installation
+sudo apt-get update
+sudo apt-get upgrade
 sudo apt-get install npm
 sudo npm install -g npm@2.x
 hash -r
@@ -110,3 +112,7 @@ crontab -e
 
 sudo touch /var/log/scanner.txt
 sudo chmod 777 /var/log/scanner.txt
+
+# configure server side (e.g. bluemix) account
+
+# configure NodeRED flows

@@ -31,11 +31,11 @@ CREATE TABLE Sensors (
 );
 
 INSERT INTO Sensors (mac, type, description, status) VALUES (
-  '00126FC21D7C', 1, 'drzwi wejsciowe', 1
+  '00126FC21ABE', 1, 'biurko', 1
 );
 
 INSERT INTO Sensors (mac, type, description, status) VALUES (
-  '00126FC21D7C', 2, 'drzwi wejsciowe', 1
+  '00126FC21ABE', 2, 'biurko', 1
 );
 
 INSERT INTO Sensors (mac, type, description, status) VALUES (
