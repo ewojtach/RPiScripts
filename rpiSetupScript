@@ -34,8 +34,8 @@ cd wiringPi
 sudo apt-get install bc
 sudo apt-get install bluez bluez-hcidump
 
-#test: hcidump —raw
-#test: hcitool leascan --duplicates &
+#test: hcidump --raw
+#test: hcitool lescan --duplicates &
 
 
 
