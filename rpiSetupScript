@@ -49,6 +49,8 @@ git clone https://github.com/ewojtach/RPiScripts.git
 cd RPiScripts
 
 chmod +x readTempAndMotionDetector.sh
+chmod +x rebootNodeRedScript.sh
+chmod +x scanCronScript.sh
 # set script to be started on boot
 
 #############  wemo configuration
@@ -75,6 +77,9 @@ sudo python setup.py install
 # node red
 # start node red from menu: Programming-> NodeRED
 
+#upgrade node and nodered
+/usr/bin/update-nodejs-and-nodered
+
 sudo systemctl enable nodered.service
 # cron and wemo nodes installation
 sudo apt-get update
@@ -85,6 +90,11 @@ hash -r
 cd ~/.node-red
 npm install node-red-contrib-cron
 npm install node-red-node-wemo
+npm install node-red-contrib-firebase-storage
+
+# reboot node red
+
+# import node red flows from file:
 
 # add BLE script to configuration
 ? sudo nano /etc/rc.local
@@ -116,3 +126,6 @@ sudo chmod 777 /var/log/scanner.txt
 # configure server side (e.g. bluemix) account
 
 # configure NodeRED flows
+# import basic flows from file: raspberryNodeRedFlows.json
+
+# to add camera support - configure e-mail

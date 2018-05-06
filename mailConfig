@@ -1,0 +1,58 @@
+#instructions from https://samhobbs.co.uk/2013/12/raspberry-pi-email-server-part-1-postfix
+#                  https://samhobbs.co.uk/2013/12/raspberry-pi-email-server-part-2-dovecot
+sudo apt-get update
+sudo apt-get install postfix
+cd /etc/postfix/
+nano /etc/postfix/main.cf
+#change myhostname to fully qualified domain name, eg. raspberrypi.com
+sudo service postfix restart
+
+nano /etc/postfix/main.cf
+# add lines:
+# home_mailbox = Maildir/
+# mailbox_command =
+
+sudo apt-get update
+sudo apt-get install dovecot-common dovecot-imapd
+
+sudo maildirmake.dovecot /etc/skel/Maildir
+sudo maildirmake.dovecot /etc/skel/Maildir/.Drafts
+sudo maildirmake.dovecot /etc/skel/Maildir/.Sent
+sudo maildirmake.dovecot /etc/skel/Maildir/.Spam
+sudo maildirmake.dovecot /etc/skel/Maildir/.Trash
+sudo maildirmake.dovecot /etc/skel/Maildir/.Templates
+
+sudo cp -r /etc/skel/Maildir /home/USER/
+sudo chown -R USER:USER /home/USER/Maildir
+sudo chmod -R 700 /home/USER/Maildir
+
+nano /etc/dovecot/dovecot.conf
+# add or change line: listen = *
+sudo service dovecot restart
+
+nano /etc/dovecot/conf.d/10-mail.conf
+# change line to: mail_location = maildir:~/Maildir
+
+nano /etc/postfix/main.cf
+# add lines:
+# smtpd_sasl_type = dovecot
+# smtpd_sasl_path = private/auth
+# smtpd_sasl_auth_enable = yes
+
+nano /etc/dovecot/conf.d/10-master.conf
+# replace line with:
+# service auth {
+#         unix_listener /var/spool/postfix/private/auth {
+#                 mode = 0660
+#                 user = postfix
+#                 group = postfix
+#         }
+# }
+
+disable_plaintext_auth = no
+auth_mechanisms = plain login
+
+sudo adduser kamera
+
+sudo service postfix restart
+sudo service dovecot restart
