@@ -1,0 +1,6 @@
+- hosts: rpi
+  vars:
+    flowsPath: "../../../flows"
+    nodeRedFlowsDirectory: "/home/pi/.node-red"
+  roles:
+    - rpi

@@ -57,15 +57,15 @@ if [[ $1 == "parse" ]]; then
 			if [[ "$DEC" -eq "1" ]]; then
 				echo ALARM!!!!!!!!!!!!!!!!!!!!!!!!!!
 				# omxplayer -o local police_s.wav
-        			
+
 				if [[ "$DEC" -ne "${alertArr[$MAC]}" ]]; then
 					echo nowy alarm
 					alertArr[$MAC]=$DEC
        					curl -i -H "Accept: application/json" -H "Content-Type: application/json" http://localhost:1880/alert?sensor=$MAC\&value=$ALARM
-				
-				fi				
 
-				
+				fi
+
+
 			fi
 			alertArr[$MAC]=$DEC
 
@@ -76,9 +76,11 @@ if [[ $1 == "parse" ]]; then
 
 			#echo consstdec: $CONSTDEC
 
-		        HEX=`echo $mp | awk '{ print $12$11 }'`
+		  HEX=`echo $mp | awk '{ print $12$11 }'`
 			DEC=$(( 16#$HEX&16#3FF ))
-			TEMP=$(($DEC/16))
+
+      echo DEC=$DEC
+      # TEMP=$(($DEC/16))
 			if [[ "$TEMP" -gt "127" ]]; then
 				TEMP=`expr $TEMP - $CONSTDEC`
 			fi
