@@ -4,12 +4,16 @@
     - initConfiguration
 
 - name: Enable NodeRED service
-  shell: "sudo systemctl enable nodered.service"
+  shell: "systemctl enable nodered.service"
+  become: true
+  become_method: sudo
   tags:
     - initConfiguration
 
 - name: Start NodeRED
-  shell: "sudo systemctl start nodered"
+  shell: "systemctl start nodered"
+  become: true
+  become_method: sudo
   tags:
     - initConfiguration
 
@@ -17,9 +21,13 @@
   wait_for:
     port: 1880
     delay: 10
+  tags:
+    - initConfiguration
 
 - name: Stop NodeRED
-  shell: "sudo systemctl stop nodered"
+  shell: "systemctl stop nodered"
+  become: true
+  become_method: sudo
 
 - name: Install additional node for tp-link smart plugin
   shell: "cd $HOME/.node-red && npm install node-red-contrib-tplink-smarthome"
@@ -33,6 +41,11 @@
 
 - name: Install additional node for cron task management
   shell: "cd $HOME/.node-red && npm install node-red-contrib-cron"
+  tags:
+    - initConfiguration
+
+- name: Install additional node for configuration
+  shell: "cd $HOME/.node-red && npm install node-red-contrib-config"
   tags:
     - initConfiguration
 
@@ -51,7 +64,9 @@
   shell: mv {{ nodeRedFlowsDirectory }}/flows.json {{ nodeRedFlowsDirectory }}/flows_`hostname`.json
 
 - name: Start NodeRED
-  shell: "sudo systemctl start nodered"
+  shell: "systemctl start nodered"
+  become: true
+  become_method: sudo
 
 - name: Wait for port 1880 to become open on the host, don't start checking for 10 seconds
   wait_for:
@@ -100,5 +115,31 @@
   file:
     path: ~/dev/RPiScripts/scanCronScript.sh
     mode: u+x
+  tags:
+    - initConfiguration
+
+- name: Add scan to cron tab on reboot
+  cron:
+    name: "scan on reboot"
+    special_time: "reboot"
+    job: "/home/pi/dev/RPiScripts/scanCronScript.sh"
+  tags:
+    - initConfiguration
+
+- name: Add scan to cron tab
+  cron:
+    name: "scan"
+    minute: "0"
+    hour: "0"
+    job: "/home/pi/dev/RPiScripts/scanCronScript.sh"
+  tags:
+    - initConfiguration
+
+- name: Add reboot to cron tab
+  cron:
+    name: "reboot device"
+    minute: "0"
+    hour: "1"
+    job: "/home/pi/dev/RPiScripts/rebootNodeRedScript.sh"
   tags:
     - initConfiguration

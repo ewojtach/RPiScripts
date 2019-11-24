@@ -1,90 +1,681 @@
 [
     {
-        "id": "c9ba72d6.9ef05",
-        "type": "cron",
-        "z": "cb332334.cf691",
-        "name": "at 10 am",
-        "crontab": "* * 10 * * *",
-        "x": 130,
-        "y": 220,
+        "id": "8e66e195.85aeb",
+        "type": "tab",
+        "label": "config",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f325480f.5dfd28",
+        "type": "tab",
+        "label": "sensor status",
+        "disabled": false
+    },
+    {
+        "id": "9460b19d.969ff8",
+        "type": "tab",
+        "label": "main reboot"
+    },
+    {
+        "id": "e888eb01.ab4338",
+        "type": "wemo-dev",
+        "z": "",
+        "device": "221521K120006D",
+        "name": "WemoPiec"
+    },
+    {
+        "id": "8f4f72c1.8b072",
+        "type": "http in",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "url": "/alert",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 138.5,
+        "y": 130,
         "wires": [
             [
-                "bbdc33d7.cc6c2"
+                "22711cff.3935a4",
+                "a15a6bbc.6057a8",
+                "43eb772d.9d934"
             ]
         ]
     },
     {
-        "id": "38a211a6.ebeb9e",
-        "type": "smart-plug",
-        "z": "cb332334.cf691",
-        "name": "aqua-light",
-        "device": "aqua-light",
-        "interval": 10000,
-        "eventInterval": 1000,
-        "x": 500,
-        "y": 160,
+        "id": "2db65b35.498ef4",
+        "type": "http in",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "url": "/measure",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 151.5,
+        "y": 249,
+        "wires": [
+            [
+                "e109a818.1ccf28",
+                "a5439eae.2ddf4"
+            ]
+        ]
+    },
+    {
+        "id": "22711cff.3935a4",
+        "type": "function",
+        "z": "f325480f.5dfd28",
+        "name": "get sensor params",
+        "func": " msg.sensorMac = msg.req.query.sensor;\n msg.measureValue = msg.req.query.value;\n\nmsg.url = global.get(\"endpoint\") + '/api/deviceStatus?sensor='+msg.req.query.sensor+\"&type=2\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 362.5,
+        "y": 140,
+        "wires": [
+            [
+                "2e7c7999.7b4876"
+            ]
+        ]
+    },
+    {
+        "id": "e109a818.1ccf28",
+        "type": "function",
+        "z": "f325480f.5dfd28",
+        "name": "get sensor params",
+        "func": "msg.payload.sensorMac = msg.req.query.sensor;\nmsg.payload.measureValue = msg.req.query.value;\n\nmsg.url = global.get(\"endpoint\") + '/api/measurement?sensor='+msg.req.query.sensor+\"&value=\"+msg.req.query.value;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 368.5,
+        "y": 210,
+        "wires": [
+            [
+                "ba854be7.4e24e8"
+            ]
+        ]
+    },
+    {
+        "id": "a15a6bbc.6057a8",
+        "type": "http response",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "x": 317.5,
+        "y": 37,
+        "wires": []
+    },
+    {
+        "id": "a5439eae.2ddf4",
+        "type": "http response",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "x": 294.5,
+        "y": 346,
+        "wires": []
+    },
+    {
+        "id": "2e7c7999.7b4876",
+        "type": "http request",
+        "z": "f325480f.5dfd28",
+        "name": "get device status from server",
+        "method": "GET",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 580.5,
+        "y": 71,
+        "wires": [
+            [
+                "849145fa.904bb8"
+            ]
+        ]
+    },
+    {
+        "id": "ba854be7.4e24e8",
+        "type": "http request",
+        "z": "f325480f.5dfd28",
+        "name": "send data to server",
+        "method": "GET",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 568.5,
+        "y": 320,
         "wires": [
             []
         ]
     },
     {
-        "id": "bbdc33d7.cc6c2",
-        "type": "function",
-        "z": "cb332334.cf691",
-        "name": "turn on",
-        "func": "msg.payload = true;\n\nreturn msg;",
+        "id": "849145fa.904bb8",
+        "type": "switch",
+        "z": "f325480f.5dfd28",
+        "name": "is device enabled",
+        "property": "payload[0].status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
         "outputs": 1,
-        "noerr": 0,
-        "x": 300,
-        "y": 120,
+        "x": 767.5,
+        "y": 161,
         "wires": [
             [
-                "38a211a6.ebeb9e"
+                "c89febfe.813d98",
+                "d31c2b2b.de3f38"
             ]
         ]
     },
     {
-        "id": "c050a4d5.2d51f8",
+        "id": "c89febfe.813d98",
+        "type": "exec",
+        "z": "f325480f.5dfd28",
+        "command": "omxplayer -o local /home/pi/dev/RPiScripts/dog_x.wav ",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "",
+        "timer": "",
+        "name": "play sound",
+        "x": 957.5,
+        "y": 60.5,
+        "wires": [
+            [
+                "f9eed045.fc287"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "d31c2b2b.de3f38",
+        "type": "function",
+        "z": "f325480f.5dfd28",
+        "name": "set params for server notification",
+        "func": "msg.url = global.get(\"endpoint\") + 'api/alert?sensor='+msg.sensorMac+\"&value=\"+ msg.measureValue;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 872,
+        "y": 269,
+        "wires": [
+            [
+                "20d81eb9.de6242"
+            ]
+        ]
+    },
+    {
+        "id": "20d81eb9.de6242",
+        "type": "http request",
+        "z": "f325480f.5dfd28",
+        "name": "notify server",
+        "method": "GET",
+        "ret": "obj",
+        "url": "",
+        "tls": "",
+        "x": 1105,
+        "y": 148,
+        "wires": [
+            [
+                "3f6abb94.b2c734"
+            ]
+        ]
+    },
+    {
+        "id": "3f6abb94.b2c734",
+        "type": "debug",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1270.5,
+        "y": 261,
+        "wires": []
+    },
+    {
+        "id": "f9eed045.fc287",
+        "type": "debug",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1138.5,
+        "y": 35,
+        "wires": []
+    },
+    {
+        "id": "843e0472.5e9d68",
         "type": "cron",
-        "z": "cb332334.cf691",
-        "name": "at 6 pm",
-        "crontab": "* * 18 * * *",
-        "x": 130,
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "crontab": "00 * * * * *",
+        "x": 128.5,
+        "y": 546,
+        "wires": [
+            [
+                "7931be04.46e28"
+            ]
+        ]
+    },
+    {
+        "id": "7931be04.46e28",
+        "type": "function",
+        "z": "f325480f.5dfd28",
+        "name": "set params for getting status call",
+        "func": " msg.sensorMac = 'WemoPiec';\n \nmsg.url = global.get(\"endpoint\") + '/api/deviceStatus?sensor='+msg.sensorMac+'&type=3';\n\nmsg.payload.url = msg.url;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 312,
+        "y": 452,
+        "wires": [
+            [
+                "567036.dcd92fcc"
+            ]
+        ]
+    },
+    {
+        "id": "98179840.272628",
+        "type": "function",
+        "z": "f325480f.5dfd28",
+        "name": "set value for wemo sensor",
+        "func": "msg.payload = msg.payload[0].status;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 693.5,
+        "y": 547,
+        "wires": [
+            [
+                "3c3b705f.ce9e3",
+                "692308c0.227958"
+            ]
+        ]
+    },
+    {
+        "id": "567036.dcd92fcc",
+        "type": "http request",
+        "z": "f325480f.5dfd28",
+        "name": "get device status",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 321.5,
+        "y": 694,
+        "wires": [
+            [
+                "d96bc9c0.5cce78",
+                "1c66daf8.c33e45"
+            ]
+        ]
+    },
+    {
+        "id": "3c3b705f.ce9e3",
+        "type": "debug",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 897.5,
+        "y": 629,
+        "wires": []
+    },
+    {
+        "id": "d96bc9c0.5cce78",
+        "type": "debug",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 516.5,
+        "y": 757,
+        "wires": []
+    },
+    {
+        "id": "1c66daf8.c33e45",
+        "type": "json",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "x": 498.5,
+        "y": 632,
+        "wires": [
+            [
+                "98179840.272628"
+            ]
+        ]
+    },
+    {
+        "id": "43eb772d.9d934",
+        "type": "debug",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 133.5,
+        "y": 42,
+        "wires": []
+    },
+    {
+        "id": "b9670d58.7d29c",
+        "type": "cron",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "crontab": "00 * * * * *",
+        "x": 159.5,
+        "y": 185,
+        "wires": [
+            [
+                "168b52d.cded32d",
+                "83cdaece.16d49"
+            ]
+        ]
+    },
+    {
+        "id": "39e9ffa0.9284a",
+        "type": "http request",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "url": "http://malinochron.eu-gb.mybluemix.net/api/deviceStatus?sensor=piMain&type=4",
+        "tls": "",
+        "x": 343.5,
+        "y": 118,
+        "wires": [
+            [
+                "35977bee.0b40a4"
+            ]
+        ]
+    },
+    {
+        "id": "35977bee.0b40a4",
+        "type": "json",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 508.5,
+        "y": 185,
+        "wires": [
+            [
+                "8b5e8dd9.3dc14"
+            ]
+        ]
+    },
+    {
+        "id": "8b5e8dd9.3dc14",
+        "type": "function",
+        "z": "9460b19d.969ff8",
+        "name": "get reboot status",
+        "func": "msg.payload = msg.payload[0].status;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 675.5,
+        "y": 90,
+        "wires": [
+            [
+                "4a7a4ae5.1df22c",
+                "d9845a9b.9624c8"
+            ]
+        ]
+    },
+    {
+        "id": "4a7a4ae5.1df22c",
+        "type": "switch",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 1,
+        "x": 808,
+        "y": 194,
+        "wires": [
+            [
+                "56904c5b.3a92ac",
+                "eaa35473.2d6978"
+            ]
+        ]
+    },
+    {
+        "id": "ab1ac5cf.83c128",
+        "type": "http request",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "http://malinochron.eu-gb.mybluemix.net/api/setDeviceStatus?sensor=piMain&type=4&status=0",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 776.5,
+        "y": 341,
+        "wires": [
+            [
+                "4936e1e1.393a"
+            ]
+        ]
+    },
+    {
+        "id": "d564aeaa.ba28c8",
+        "type": "exec",
+        "z": "9460b19d.969ff8",
+        "command": "sudo reboot",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "",
+        "timer": "",
+        "name": "",
+        "x": 1099.5,
+        "y": 552.5,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "168b52d.cded32d",
+        "type": "debug",
+        "z": "9460b19d.969ff8",
+        "name": "cron",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 286.5,
+        "y": 237,
+        "wires": []
+    },
+    {
+        "id": "d9845a9b.9624c8",
+        "type": "debug",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "payload",
+        "x": 974.5,
+        "y": 42,
+        "wires": []
+    },
+    {
+        "id": "56904c5b.3a92ac",
+        "type": "debug",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 1032.5,
+        "y": 181,
+        "wires": []
+    },
+    {
+        "id": "48db2679.94a08",
+        "type": "http request",
+        "z": "9460b19d.969ff8",
+        "name": "check if status set to 0",
+        "method": "GET",
+        "ret": "txt",
+        "url": "http://malinochron.eu-gb.mybluemix.net/api/deviceStatus?sensor=piMain&type=4",
+        "tls": "",
+        "x": 340,
+        "y": 500,
+        "wires": [
+            [
+                "c8f9c75c.795bf"
+            ]
+        ]
+    },
+    {
+        "id": "c8f9c75c.795bf",
+        "type": "json",
+        "z": "9460b19d.969ff8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 532,
+        "y": 507,
+        "wires": [
+            [
+                "c44ff53f.7626f"
+            ]
+        ]
+    },
+    {
+        "id": "c44ff53f.7626f",
+        "type": "function",
+        "z": "9460b19d.969ff8",
+        "name": "get reboot status",
+        "func": "msg.payload = msg.payload[0].status;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 743,
+        "y": 491,
+        "wires": [
+            [
+                "c9e1162a.0b2518"
+            ]
+        ]
+    },
+    {
+        "id": "c9e1162a.0b2518",
+        "type": "switch",
+        "z": "9460b19d.969ff8",
+        "name": "if status=0",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 1,
+        "x": 872.5,
+        "y": 630,
+        "wires": [
+            [
+                "d564aeaa.ba28c8"
+            ]
+        ]
+    },
+    {
+        "id": "c19e24c7.fa4968",
+        "type": "config",
+        "z": "8e66e195.85aeb",
+        "name": "set up server endpoint",
+        "properties": [
+            {
+                "p": "endpoint",
+                "pt": "global",
+                "to": "{{ server_url }}",
+                "tot": "str"
+            }
+        ],
+        "active": true,
+        "x": 150,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "83cdaece.16d49",
+        "type": "function",
+        "z": "9460b19d.969ff8",
+        "name": "get reboot value",
+        "func": "\nmsg.url = global.get(\"endpoint\") + '/api/deviceStatus?sensor=piMain&type=4';\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 260,
+        "y": 60,
+        "wires": [
+            [
+                "39e9ffa0.9284a"
+            ]
+        ]
+    },
+    {
+        "id": "eaa35473.2d6978",
+        "type": "function",
+        "z": "9460b19d.969ff8",
+        "name": "set rebooted",
+        "func": "msg.url = global.get(\"endpoint\") + '/api/setDeviceStatus?sensor=piMain&type=4&status=0';\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
         "y": 320,
         "wires": [
             [
-                "bb2220b6.3934"
+                "ab1ac5cf.83c128"
             ]
         ]
     },
     {
-        "id": "2188df92.2c0aa",
-        "type": "smart-plug",
-        "z": "cb332334.cf691",
-        "name": "aqua-light",
-        "device": "aqua-light",
-        "interval": 10000,
-        "eventInterval": 1000,
-        "x": 530,
-        "y": 300,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "bb2220b6.3934",
+        "id": "4936e1e1.393a",
         "type": "function",
-        "z": "cb332334.cf691",
-        "name": "turn off",
-        "func": "msg.payload = false;\n\nreturn msg;",
+        "z": "9460b19d.969ff8",
+        "name": "get reboot value",
+        "func": "\nmsg.url = global.get(\"endpoint\") + '/api/deviceStatus?sensor=piMain&type=4';\n\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 330,
-        "y": 260,
+        "x": 100,
+        "y": 540,
         "wires": [
             [
-                "2188df92.2c0aa"
+                "48db2679.94a08"
             ]
+        ]
+    },
+    {
+        "id": "692308c0.227958",
+        "type": "smart-plug",
+        "z": "f325480f.5dfd28",
+        "name": "",
+        "device": "",
+        "interval": 10000,
+        "eventInterval": 1000,
+        "x": 980,
+        "y": 540,
+        "wires": [
+            []
         ]
     }
 ]
